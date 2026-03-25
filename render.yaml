@@ -1,25 +1,12 @@
 services:
   - type: web
-    name: copaw-app
-    runtime: python
+    name: copaw
+    runtime: docker
     plan: free
-    # Step 1: Build the frontend console
-    # Step 2: Move frontend assets to the backend package
-    # Step 3: Install the Python package in editable mode
-    buildCommand: |
-      cd console && npm ci && npm run build && cd ..
-      mkdir -p src/copaw/console
-      cp -R console/dist/. src/copaw/console/
-      pip install -e .
-    # Start the CoPaw application on the port provided by Render
-    startCommand: copaw app --port $PORT
+    dockerImage: agentscope/copaw:latest
+    healthCheckPath: /
     envVars:
-      - key: PORT
-        value: 10000
-      - key: DASHSCOPE_API_KEY
-        sync: false  # You will set this in the Render Dashboard
-      - key: OPENAI_API_KEY
-        sync: false  # Optional: add other keys as needed
-      - key: PYTHON_VERSION
-        value: 3.10.0
-
+      - key: COPAW_WORKING_DIR
+        value: /tmp/copaw
+      - key: DASHSCOPE_API_KEY   # or OPENAI_API_KEY
+        sync: false               # prompts you to enter it securely
